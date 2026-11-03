@@ -49,7 +49,11 @@ function Login() {
       setError(error.message === "Email not confirmed" ? "Please confirm your email first — check your inbox." : "Incorrect email or password.");
       return;
     }
-    if (!remember) sessionStorage.setItem("bfs-session-only", "1");
+    if (remember) localStorage.removeItem("bfs-no-remember");
+    else {
+      localStorage.setItem("bfs-no-remember", "1");
+      sessionStorage.setItem("bfs-alive", "1");
+    }
     navigate({ to: safePath(redirect) });
   };
 

@@ -179,7 +179,7 @@ function Sell() {
             )}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">JPG, PNG or WebP · up to 5 MB each · max 6 photos</p>
-          <FieldError msg={errs.images} />
+          <FieldError msg={errs["images"]} />
         </Card>
 
         <Card title="Condition">
@@ -191,7 +191,7 @@ function Sell() {
               </label>
             ))}
           </div>
-          <FieldError msg={errs.condition} />
+          <FieldError msg={errs["condition"]} />
         </Card>
 
         <Card title="About you as a seller">

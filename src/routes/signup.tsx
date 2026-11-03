@@ -104,7 +104,7 @@ function Signup() {
             <Checkbox checked={f.terms} onCheckedChange={(v) => setF({ ...f, terms: !!v })} className="mt-0.5" />
             <span>I agree to the <Link to="/terms" className="text-teal hover:underline">Terms and Conditions</Link> and <Link to="/privacy" className="text-teal hover:underline">Privacy Policy</Link>.</span>
           </label>
-          <FieldError msg={errs.terms} />
+          <FieldError msg={errs["terms"]} />
         </div>
         {error && <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
         <Button type="submit" className="w-full" disabled={busy}>

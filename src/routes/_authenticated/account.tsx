@@ -35,14 +35,14 @@ function Account() {
 
   const setStatus = async (id: string, status: ListingRow["status"]) => {
     const { error } = await supabase.from("listings").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["my-listings"] });
   };
   const remove = async (l: ListingRow) => {
     if (!confirm(`Delete “${l.books.title}”?`)) return;
     const paths = l.listing_images.map((i) => i.storage_path);
     const { error } = await supabase.from("listings").delete().eq("id", l.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (paths.length) await supabase.storage.from("listing-images").remove(paths);
     toast.success("Listing deleted");
     qc.invalidateQueries({ queryKey: ["my-listings"] });

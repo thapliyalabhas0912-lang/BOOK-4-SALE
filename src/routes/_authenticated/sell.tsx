@@ -88,9 +88,9 @@ function Sell() {
     if (busy) return;
     const r = schema.safeParse(f);
     const errors: Record<string, string> = r.success ? {} : Object.fromEntries(r.error.issues.map((i) => [i.path[0], i.message]));
-    if (!files.length) errors.images = "Add at least one photo";
+    if (!files.length) errors["images"] = "Add at least one photo";
     setErrs(errors);
-    if (!r.success || errors.images) return toast.error("Please fix the highlighted fields");
+    if (!r.success || errors["images"]) { toast.error("Please fix the highlighted fields"); return; }
     const d = r.data;
     setBusy(true);
     try {

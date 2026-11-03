@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Shared site chrome (Header/Footer) lives in src/components/site and wraps <Outlet /> in __root.tsx — one consistent nav across pages.

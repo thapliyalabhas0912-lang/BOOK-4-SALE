@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Shared site chrome (Header/Footer) lives in src/components/site and wraps <Outlet /> in __root.tsx — one consistent nav across pages.
+- Listing photos live in a private storage bucket; DB stores the storage path and the app signs URLs at read time (workspace blocks public buckets).
+- Protected pages go under src/routes/_authenticated/ (client-only gate redirecting to /login).

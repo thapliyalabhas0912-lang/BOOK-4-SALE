@@ -1,6 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
+import { LogOut, User } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/hooks/use-session";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -24,9 +28,17 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { user } = useSession();
+  const signOut = async () => {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/login", replace: true });
+  };
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/buy" });
+    navigate({ to: "/buy", search: { q: q || undefined } });
   };
 
   return (
@@ -64,12 +76,25 @@ export function Header() {
           <Link to="/cart" aria-label="Cart" className="rounded-md p-2 text-foreground hover:bg-secondary">
             <ShoppingBag className="h-5 w-5" />
           </Link>
-          <Link to="/login" className="hidden rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary sm:inline-flex">
-            Log in
-          </Link>
-          <Link to="/signup" className="hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:inline-flex">
-            Sign up
-          </Link>
+          {user ? (
+            <>
+              <Link to="/account" className="hidden items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary sm:inline-flex">
+                <User className="h-4 w-4" /> My account
+              </Link>
+              <button onClick={signOut} aria-label="Log out" className="hidden rounded-md p-2 text-foreground hover:bg-secondary sm:inline-flex">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="hidden rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary sm:inline-flex">
+                Log in
+              </Link>
+              <Link to="/signup" className="hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:inline-flex">
+                Sign up
+              </Link>
+            </>
+          )}
           <button aria-label="Menu" onClick={() => setOpen(!open)} className="rounded-md p-2 lg:hidden">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -83,8 +108,17 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-            <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-sm text-foreground">Log in</Link>
-            <Link to="/signup" onClick={() => setOpen(false)} className="py-2 text-sm font-medium text-primary">Sign up</Link>
+            {user ? (
+              <>
+                <Link to="/account" onClick={() => setOpen(false)} className="py-2 text-sm text-foreground">My account</Link>
+                <button onClick={() => { setOpen(false); signOut(); }} className="py-2 text-left text-sm text-foreground">Log out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-sm text-foreground">Log in</Link>
+                <Link to="/signup" onClick={() => setOpen(false)} className="py-2 text-sm font-medium text-primary">Sign up</Link>
+              </>
+            )}
           </div>
         </div>
       )}

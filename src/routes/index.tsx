@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, GraduationCap, Landmark, Library, MessageCircle, Search, Stethoscope, Atom, Briefcase, ShieldCheck, Wallet } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { ListingCard } from "@/components/site/ListingCard";
+import { LISTING_SELECT, withImageUrls, discountPct, type ListingRow } from "@/lib/listings";
 import hero from "@/assets/hero-books.jpg";
 
 export const Route = createFileRoute("/")({
@@ -78,11 +82,8 @@ function Index() {
         </div>
       </Section>
 
-      {["Recently Listed Books", "Best Deals", "Recommended for You", "Popular Books"].map((t) => (
-        <Section key={t} title={t} action={{ to: "/buy", label: "View all" }}>
-          <EmptyListings />
-        </Section>
-      ))}
+      <ListingsSection title="Recently Listed Books" />
+      <ListingsSection title="Best Deals" deals />
 
       <Section title="How It Works">
         <div className="grid gap-4 md:grid-cols-3">
@@ -130,6 +131,31 @@ function Section({ title, action, children }: { title: string; action?: { to: "/
       </div>
       {children}
     </section>
+  );
+}
+
+function ListingsSection({ title, deals }: { title: string; deals?: boolean }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["home-listings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("listings").select(LISTING_SELECT).eq("status", "active").order("created_at", { ascending: false }).limit(40);
+      if (error) throw error;
+      return withImageUrls(data as unknown as Omit<ListingRow, "imageUrls">[]);
+    },
+  });
+  const rows = deals
+    ? [...(data ?? [])].filter((l) => discountPct(l.mrp, l.price) >= 30).sort((a, b) => discountPct(b.mrp, b.price) - discountPct(a.mrp, a.price)).slice(0, 4)
+    : (data ?? []).slice(0, 8);
+  return (
+    <Section title={title} action={{ to: "/buy", label: "View all" }}>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : rows.length ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{rows.map((l) => <ListingCard key={l.id} l={l} />)}</div>
+      ) : (
+        <EmptyListings />
+      )}
+    </Section>
   );
 }
 

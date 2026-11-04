@@ -9,7 +9,7 @@ import hero from "@/assets/hero-books.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Book For Sale — Find Your Next Book at a Better Price" },
+      { title: "Book For Sale – Find Your Next Book" },
       { name: "description", content: "A student-to-student marketplace for used NCERT, JEE, NEET, UPSC, SSC, Banking and college books." },
       { property: "og:title", content: "Book For Sale — Your Books. Someone's Next Beginning." },
       { property: "og:description", content: "Buy and sell second-hand academic and competitive exam books from fellow students." },
